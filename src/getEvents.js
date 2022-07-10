@@ -1,19 +1,8 @@
 import request from 'superagent'
 import moment from 'moment-with-locales-es6'
+import { Bluetooth } from '@material-ui/icons'
 const CULTURE = (language) => language===LANGUAGE_SV?'sv':language===LANGUAGE_ES?'es':'en'
-const CALENDAR_ID_ORIG = 'tb8ckdrm61bdsj6jfm7khob4u5@group.calendar.google.com'
-const API_KEY_ORIG = 'AIzaSyAOuDzSlG24RPBn3OKVAyjW3OK_EJhCUbp'
-//let url = `https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID_ORIG}/events?key=${API_KEY_ORIG}`
 
-// Pers calendar  
-//const CALENDAR_ID = 'e8crjpja77kp13nv2u9q52rkcc@group.calendar.google.com'
-const CALENDAR_ID = 'per.eskilson@gmail.com'
-const API_KEY = 'AIzaSyBMhuxVODuB4qYKmIoSguPYuQuTfct-QIs'
-//const url = `https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?key=${API_KEY}`
-
-//Daniels Tangokompaniet calendar
-const CALENDAR_ID_TK = 'tangokompaniet@gmail.com'
-const API_KEY_TK = 'AIzaSyB0EBiE8xd5ItS59IahMyficWWAanHhMzU' // Per 2
 const LANGUAGE_SV='SV'
 const LANGUAGE_ES='ES'
 
@@ -28,7 +17,6 @@ const findParameter = (s, val) => {
     return undefined
   }  
 }  
-
 
 // export means that this function will be available to any module that imports this module
 export function getEvents (calendarId, apiKey, callback, timeMin, timeMax, language) {
@@ -47,6 +35,24 @@ export function getEvents (calendarId, apiKey, callback, timeMin, timeMax, langu
                :undefined:undefined          
     }    
   }    
+
+  const eventStyle = {
+    DANIEL:{backgroundColor:"#81185B"},
+    HOMERO:{backgroundColor:'lightYellow', color:'red'},
+    MARCELA:{backgroundColor:'brown', color:'yellow'},
+    IVAN:{backgroundColor:'brown'},
+    MICAEL:{backgroundColor:'orange'},
+    CAMARIN:{backgroundColor:'red'},
+    ARRIBA:{backgroundColor:'green'},
+    DEFAULT:{backgroundColor:'black'}
+  }
+
+  const getEventStyle = title => {
+    const found = Object.entries(eventStyle).find(it => title.toUpperCase().indexOf(it[0].toUpperCase()) > -1)
+    const style = found?found[1]:eventStyle.DEFAULT
+    return style
+  }
+  
   request
     .get(url)
     .end((err, resp) => {
@@ -76,6 +82,7 @@ export function getEvents (calendarId, apiKey, callback, timeMin, timeMax, langu
           const maxInd = Number(findParameter(description, 'MAX_IND'))
           const maxRegistrants = Number(maxInd?maxInd:maxPar?(maxPar*2):500)
           const useRegistrationButton = it.description?(it.description.indexOf('MAX_IND')!==-1 || it.description.indexOf('MAX_PAR')!==-1):false
+          const style = getEventStyle(title)
 
           isLightColor = weekNumber===previousWeekNumber?isLightColor:!isLightColor
           previousWeekNumber = weekNumber
@@ -97,6 +104,7 @@ export function getEvents (calendarId, apiKey, callback, timeMin, timeMax, langu
             maxInd,
             maxRegistrants,
             useRegistrationButton,
+            style, 
           }  
           events.push(event)
           previousEndDate=end

@@ -2,15 +2,15 @@ import React, {useState, useEffect} from 'react'
 import { Calendar, momentLocalizer } from 'react-big-calendar'
 import moment from 'moment-with-locales-es6'
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import './style.css';
-import {getEvents} from './getEvents'
+import '../style.css';
+import {getEvents} from '../getEvents'
 
-const calendarId='tangokompaniet@gmail.com'
-const apiKey='AIzaSyB0EBiE8xd5ItS59IahMyficWWAanHhMzU' 
+const calendarId=process.env.REACT_APP_CALENDAR_ID
+const apiKey=process.env.REACT_APP_API_KEY
 
 const localizer = momentLocalizer(moment)
 
-function App() {
+function Cal() {
   const [events, setEvents] = useState([])
   useEffect(()=>{
     const timeMin = moment().startOf('day')
@@ -39,6 +39,9 @@ function App() {
           startAccessor="start"
           endAccessor="end"
           onSelectEvent={handleEvent}
+          eventPropGetter={(ev, start, end, isSelected) => (
+            {style:ev.style})} 
+
           style={{ height: 500 }}
         />
       </header>
@@ -46,4 +49,4 @@ function App() {
   );
 }
 
-export default App;
+export default Cal;
