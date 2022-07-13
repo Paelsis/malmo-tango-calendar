@@ -1,6 +1,6 @@
 import request from 'superagent'
 import moment from 'moment-with-locales-es6'
-import { Bluetooth } from '@material-ui/icons'
+import getStyle from './getStyle'
 const CULTURE = (language) => language===LANGUAGE_SV?'sv':language===LANGUAGE_ES?'es':'en'
 
 const LANGUAGE_SV='SV'
@@ -36,22 +36,6 @@ export function getEvents (calendarId, apiKey, callback, timeMin, timeMax, langu
     }    
   }    
 
-  const eventStyle = {
-    DANIEL:{backgroundColor:"#81185B"},
-    HOMERO:{backgroundColor:'lightYellow', color:'red'},
-    MARCELA:{backgroundColor:'brown', color:'yellow'},
-    IVAN:{backgroundColor:'brown'},
-    MICAEL:{backgroundColor:'orange'},
-    CAMARIN:{backgroundColor:'red'},
-    ARRIBA:{backgroundColor:'green'},
-    DEFAULT:{backgroundColor:'black'}
-  }
-
-  const getEventStyle = title => {
-    const found = Object.entries(eventStyle).find(it => title.toUpperCase().indexOf(it[0].toUpperCase()) > -1)
-    const style = found?found[1]:eventStyle.DEFAULT
-    return style
-  }
   
   request
     .get(url)
@@ -82,7 +66,7 @@ export function getEvents (calendarId, apiKey, callback, timeMin, timeMax, langu
           const maxInd = Number(findParameter(description, 'MAX_IND'))
           const maxRegistrants = Number(maxInd?maxInd:maxPar?(maxPar*2):500)
           const useRegistrationButton = it.description?(it.description.indexOf('MAX_IND')!==-1 || it.description.indexOf('MAX_PAR')!==-1):false
-          const style = getEventStyle(title)
+          const style = getStyle(title, description)
 
           isLightColor = weekNumber===previousWeekNumber?isLightColor:!isLightColor
           previousWeekNumber = weekNumber
